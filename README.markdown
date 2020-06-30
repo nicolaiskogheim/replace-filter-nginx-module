@@ -5,9 +5,19 @@ ngx_replace_filter - Streaming regular expression replacement in response bodies
 
 *This module is not distributed with the Nginx source.* See [the installation instructions](#installation).
 
+About this fork
+===============
+
+This fork is was created so that I can apply patches from pull request that
+were not applied upstream, and apply my own patches if needed. I only need this
+package to work, and will not develop it further.
+
+Feel free to fork, but do not rely on this fork in your build scripts, please.
+
 Table of Contents
 =================
 
+* [About this fork](#about-this-fork)
 * [Name](#name)
 * [Status](#status)
 * [Synopsis](#synopsis)
