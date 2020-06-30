@@ -45,6 +45,10 @@ Status
 This module is already quite usable though still at the early phase of development
 and is considered experimental.
 
+Alas, it is not working. Errors with gcc8, and the travis build is failing.
+I don't know how to go about fixing this, but I'll probably try and just update
+all the things and take it from there.
+
 Synopsis
 ========
 
