@@ -14,7 +14,8 @@ package to work, and will not develop it further.
 
 Feel free to fork, but do not rely on this fork in your build scripts, please.
 
-How I made this work:
+How I made this work (spoiler: doesn't work yet..)
+
 My impression is that GCC has been getting stricter over the years, and `gcc
 10.1.0`, which I use, complains about stuff like type casting between
 incompatible types, implicit fallthrough and such. The `nginx` codebase have
