@@ -14,6 +14,104 @@ package to work, and will not develop it further.
 
 Feel free to fork, but do not rely on this fork in your build scripts, please.
 
+How I made this work:
+My impression is that GCC has been getting stricter over the years, and `gcc
+10.1.0`, which I use, complains about stuff like type casting between
+incompatible types, implicit fallthrough and such. The `nginx` codebase have
+improved over the years so the clue was to just build this `replace_filter`
+package against a newer version.
+
+NB: You cannot build against just any version. The version of `nginx` you build
+against needs to be patched in certain ways. There are a bunch of patches for
+different versions, but not all.
+
+If you want to build locally, your best bet, I think, is to look at the
+`.travis.yml` file. Replicate that environment locally to build. Seven
+repositories will need to be cloned, for instance. Now, for the patches: those
+are gotten from two places:
+- https://github.com/openresty/no-pool-nginx.git which should be located at ../no-pool-nignx
+- https://github.com/openresty/openresty.git which should be located at ../openresty
+
+Look at which patches are available to see which versions of nginx you can build against:
+
+```sh
+$ pwd
+/home/me/projects/replace-filter-nginx-module
+
+$ ls ../no-pool-nginx/ | grep 1.13
+nginx-1.1.13-no_pool.patch
+nginx-1.13.3-no_pool.patch
+nginx-1.13.4-no_pool.patch
+nginx-1.13.5-no_pool.patch
+nginx-1.13.6-no_pool.patch
+nginx-1.13.8-no_pool.patch
+
+# I want 1.13.8, which has a no_pool.patch. Let's see if we have the other
+# patches for that version:
+ls ../openresty/patches/ | grep 1.13.8
+nginx-1.13.8-balancer_status_code.patch
+nginx-1.13.8-stream_ssl_preread_no_skip.patch
+
+# Hm, the `always_enable_cc_feature_tests.patch` is missing..
+# Let's look for that:
+$ ls ../openresty/patches | grep always_enable_cc_feature_tests.patch
+nginx-1.11.2-always_enable_cc_feature_tests.patch
+nginx-1.13.3-always_enable_cc_feature_tests.patch
+nginx-1.13.4-always_enable_cc_feature_tests.patch
+nginx-1.13.5-always_enable_cc_feature_tests.patch
+nginx-1.13.6-always_enable_cc_feature_tests.patch
+nginx-1.15.5-always_enable_cc_feature_tests.patch
+nginx-1.15.6-always_enable_cc_feature_tests.patch
+nginx-1.15.8-always_enable_cc_feature_tests.patch
+nginx-1.17.1-always_enable_cc_feature_tests.patch
+nginx-1.17.4-always_enable_cc_feature_tests.patch
+nginx-1.17.8-always_enable_cc_feature_tests.patch
+nginx-1.9.11-always_enable_cc_feature_tests.patch
+nginx-1.9.15-always_enable_cc_feature_tests.patch
+nginx-1.9.3-always_enable_cc_feature_tests.patch
+nginx-1.9.7-always_enable_cc_feature_tests.patch
+
+# There's a patch for 1.13.6, so we try that.
+$ ls ../openresty/patches/ | grep 1.13.6
+nginx-1.13.6-always_enable_cc_feature_tests.patch
+nginx-1.13.6-balancer_status_code.patch
+nginx-1.13.6-builtin_error_page_footer.patch
+nginx-1.13.6-cache_manager_exit.patch
+nginx-1.13.6-daemon_destroy_pool.patch
+nginx-1.13.6-delayed_posted_events.patch
+nginx-1.13.6-dtrace.patch
+nginx-1.13.6-gcc-maybe-uninitialized-warning.patch
+nginx-1.13.6-hash_overflow.patch
+nginx-1.13.6-init_cycle_pool_release.patch
+nginx-1.13.6-intercept_error_log.patch
+nginx-1.13.6-larger_max_error_str.patch
+nginx-1.13.6-log_escape_non_ascii.patch
+nginx-1.13.6-no_error_pages.patch
+nginx-1.13.6-no_pool.patch
+nginx-1.13.6-no_Werror.patch
+nginx-1.13.6-pcre_conf_opt.patch
+nginx-1.13.6-privileged_agent_process.patch
+nginx-1.13.6-proxy_host_port_vars.patch
+nginx-1.13.6-resolver_conf_parsing.patch
+nginx-1.13.6-safe_resolver_ipv6_option.patch
+nginx-1.13.6-server_header.patch
+nginx-1.13.6-setting_args_invalidates_uri.patch
+nginx-1.13.6-single_process_graceful_exit.patch
+nginx-1.13.6-socket_cloexec.patch
+nginx-1.13.6-ssl_cert_cb_yield.patch
+nginx-1.13.6-ssl_pending_session.patch
+nginx-1.13.6-stream_balancer_export.patch
+nginx-1.13.6-stream_proxy_get_next_upstream_tries.patch
+nginx-1.13.6-stream_proxy_timeout_fields.patch
+nginx-1.13.6-stream_ssl_preread_no_skip.patch
+nginx-1.13.6-upstream_pipelining.patch
+nginx-1.13.6-upstream_timeout_fields.patch
+
+# 1.13.6 should have patches for whatever we need.
+# 1.13.6 Didn't work out because of GCC complaints, but 1.15.8 worked fine.
+```
+
+
 Table of Contents
 =================
 
